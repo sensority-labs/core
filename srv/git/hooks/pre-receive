@@ -1,0 +1,39 @@
+#!/bin/sh
+echo "========================"
+echo "Unsealing the cradle..."
+
+# Temporary directory to check out the commit
+TEMP_DIR=$(mktemp -d)
+WEBHOOK_URL="http://host.docker.internal:8000/build"
+
+# Read the incoming commit details
+while read _ newrev _; do
+    git --work-tree="$TEMP_DIR" --git-dir="$(pwd)" checkout "$newrev" -- . 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to checkout files" >&2
+        exit 1
+    fi
+    cd "$TEMP_DIR" || exit 1
+    # Create a tarball of the repo files
+    tar -czf "$TEMP_DIR/src.tar.gz" * 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to create tarball" >&2
+        exit 1
+    fi
+    # send repo files via webhook
+    status_http_code=$(curl -s -o /tmp/curl_output -w "%{http_code}" -X POST "$WEBHOOK_URL/watchman0" \
+        -F file=@"$TEMP_DIR/src.tar.gz")
+    if [ "$status_http_code" -ne 200 ]; then
+        echo "Docker build failed. Reverting changes..."
+        exit 1
+    fi
+    container_id=$(cat /tmp/curl_output)
+done
+
+echo "The seals are removed, the watchman on the watch!"
+echo "Watchman ID: $container_id"
+echo "========================"
+
+# Clean up
+rm -rf "$TEMP_DIR"
+exit 0
