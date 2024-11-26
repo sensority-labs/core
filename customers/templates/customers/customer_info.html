@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Info</title>
+</head>
+<body>
+    <h1>Customer Info</h1>
+    <p>Email: {{ customer.email }}</p>
+    <p>SSH key: {{ customer.ssh_public_key }}</p>
+
+    <h2>Add SSH Public Key</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

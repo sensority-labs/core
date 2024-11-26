@@ -1,5 +1,5 @@
 # Use Debian as the base image
-FROM debian:bookworm-slim
+FROM python:3.13-slim
 
 # Update and install necessary packages
 RUN apt-get update && apt-get install -y \
@@ -8,10 +8,13 @@ RUN apt-get update && apt-get install -y \
     iputils-ping \
     curl \
     openssh-server \
-    python3 \
-    python3-pip \
     openssh-client \
+    pipx \
     && rm -rf /var/lib/apt/lists/*  # Clean up the apt cache to reduce image size
+
+######################
+# Prepare GIT server #
+######################
 
 # Create the privilege separation directory
 RUN mkdir -p /run/sshd && chmod 0755 /run/sshd
@@ -25,34 +28,40 @@ RUN echo "PasswordAuthentication no" >> /etc/ssh/sshd_config && \
     echo "PermitRootLogin no" >> /etc/ssh/sshd_config
 
 # Create group and user 'customer0'
-RUN groupadd -r observers && useradd -ms /usr/bin/git-shell -G observers customer0
+RUN groupadd -r observers
 
 # Copy your custom files into the container
 COPY srv /srv
 RUN chmod -R 755 /srv
 
-# Experimental section. Users should be added by the django app
-# Set up SSH authorized keys for the 'customer0' user
-USER customer0
-RUN mkdir -p /home/customer0/.ssh && \
-    echo "paste pubkey here" > /home/customer0/.ssh/authorized_keys && \
-    chmod 700 /home/customer0/.ssh && \
-    chmod 600 /home/customer0/.ssh/authorized_keys && \
-    chown -R customer0:observers /home/customer0/.ssh
+######################
+# Prepare App server #
+######################
+WORKDIR /app
 
-# Initialize a bare Git repository for 'watchman0'
-RUN mkdir -p /home/customer0/repos/watchman0.git && \
-    cd /home/customer0/repos/watchman0.git && \
-    git init --bare
+# Install Poetry
+RUN pipx install poetry
+ENV PATH="$PATH:/root/.local/bin"
 
-# Copy Git hooks
-RUN cp -r /srv/git/hooks/* /home/customer0/repos/watchman0.git/hooks/
-# End of experimental section
+# Copy the app source code into the container
+COPY poetry.lock pyproject.toml /app/
+# Install the app dependencies
+RUN poetry install
 
-# Switch back to the root user
-USER root
-# Expose SSH port
+# Expose ports
 EXPOSE 22
+EXPOSE 8000
 
-# Run the SSH server in the foreground
-CMD ["/usr/sbin/sshd", "-D", "-e"]
+# Copy the rest of the app source code into the container
+COPY . /app
+
+# Set the environment variable to indicate that the app is running in a Docker container
+ENV IS_DOCKER=true
+ENV PYTHONUNBUFFERED=1
+
+# Declare the build argument
+ARG DATABASE_URL
+# Use the build argument as an environment variable
+ENV DATABASE_URL=${DATABASE_URL}
+
+ENTRYPOINT ["/app/entrypoint.sh"]

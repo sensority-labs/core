@@ -1,0 +1,89 @@
+services:
+  big-ear:
+    image: ghcr.io/sensority-labs/big-ear
+    environment:
+      DEBUG: "false"
+      ETH_RPC_URL: ${ETH_RPC_URL}
+      ETH_RPC_WS_URL: ${ETH_RPC_WS_URL}
+      ETH_STREAM_MAX_MSGS: ${ETH_STREAM_MAX_MSGS}
+      ETH_STREAM_NAME: ${ETH_STREAM_NAME}
+      NATS_URL: "nats://nats:4222"
+    depends_on:
+      - nats
+    networks:
+      - sensority-labs
+
+  vajdos:
+    image: ghcr.io/sensority-labs/vajdos
+    environment:
+      NATS_URL: "nats://nats:4222"
+    depends_on:
+      - nats
+    networks:
+      - sensority-labs
+
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats:/data
+    command:
+      - "--name=nats"
+      - "--http_port=8222"
+      - "--js"
+      - "--sd=/data"
+    networks:
+      - sensority-labs
+
+  bot-builder:
+#    image: ghcr.io/sensority-labs/bot-builder
+    image: bbuilder
+    environment:
+      GITHUB_TOKEN: ${GITHUB_PULL_TOKEN}
+      NATS_URL: "nats://nats:4222"
+      NETWORK_NAME: "sensority-labs"
+      PORT: 5005
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+
+  core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: postgres://postgres:postgres@db:5432/sensority_core
+    ports:
+      - "2222:22"
+      - "8000:8000"
+    develop:
+      watch:
+        - path: .
+          action: sync+restart
+          target: /app
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/sensority_core
+      WEBHOOK_URL: "http://bot-builder:5005/build"
+
+  db:
+    image: postgres:17.2
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=sensority_core
+
+volumes:
+  db_data:
+  nats:
+
+networks:
+  sensority-labs:
+    name: sensority-labs

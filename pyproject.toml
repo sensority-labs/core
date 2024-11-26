@@ -7,6 +7,14 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+django-allauth = "^65.2.0"
+black = "^24.10.0"
+requests = "^2.32.3"
+pyjwt = "^2.10.0"
+uvicorn = "^0.32.1"
+cryptography = "^43.0.3"
+dj-database-url = "^2.3.0"
+psycopg2-binary = "^2.9.10"
 
 
 [build-system]
