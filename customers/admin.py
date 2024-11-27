@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from gettext import gettext as _
-from customers.models import Customer, Watchman
+from customers.models import Customer, Watchman, SSHKey
 
 
 @admin.register(Customer)
@@ -44,6 +44,13 @@ class CustomerAdmin(UserAdmin):
 
     search_fields = ["email"]
     ordering = ["email"]
+
+
+@admin.register(SSHKey)
+class SSHKeyAdmin(admin.ModelAdmin):
+    list_display = ["name", "owner", "key"]
+    fields = ["name", "owner", "key"]
+    readonly_fields = ["key"]
 
 
 @admin.register(Watchman)

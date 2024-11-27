@@ -45,8 +45,12 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "widget_tweaks",
     # Добавьте провайдеры, если используете их (например, Google)
     "allauth.socialaccount.providers.google",
+    # Add the Django Formify app:
+    "django_viewcomponent",
+    "django_formify",
 ]
 
 MIDDLEWARE = [
@@ -67,13 +71,23 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
+        # "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+            ],
+            "loaders": [
+                (
+                    "django.template.loaders.cached.Loader",
+                    [
+                        "django.template.loaders.filesystem.Loader",
+                        "django.template.loaders.app_directories.Loader",
+                        "django_viewcomponent.loaders.ComponentLoader",
+                    ],
+                )
             ],
         },
     },
@@ -89,6 +103,7 @@ DATABASES = {
     "default": dj_database_url.config(
         conn_max_age=600,
         conn_health_checks=True,
+        default="postgres://postgres:postgres@localhost:5432/sensority_core",
     ),
 }
 
@@ -136,8 +151,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Google auth
 SITE_ID = 1
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/customers/"
+LOGIN_URL = "/"
+LOGIN_REDIRECT_URL = "/customers/"
+LOGOUT_REDIRECT_URL = "/"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False

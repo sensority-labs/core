@@ -1,36 +1,72 @@
 import json
+from typing import cast
+from uuid import UUID
 
-from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.http import (
-    HttpResponseRedirect,
     HttpResponseBadRequest,
     HttpResponse,
+    HttpRequest,
 )
-from django.urls import reverse
 
 from customers.forms import SSHKeyForm
-from customers.models import Watchman
+from customers.models import Watchman, SSHKey, Customer
+from customers.system.ssh import (
+    add_ssh_key_to_authorized_keys,
+    remove_ssh_key_from_authorized_keys,
+)
+
+
+@login_required
+@require_http_methods(["GET"])
+def customer_info(request):
+    return render(request, "customers/index.html", {"customer": request.user})
 
 
 @login_required
 @require_http_methods(["GET", "POST"])
-def customer_info(request):
-    customer = request.user
+def keys_manager(request: HttpRequest) -> HttpResponse:
+    customer = cast(Customer, request.user)
     if request.method == "POST":
         form = SSHKeyForm(request.POST)
         if form.is_valid():
-            customer.ssh_public_key = form.cleaned_data["ssh_public_key"]
-            customer.save()
-            return HttpResponseRedirect(reverse("customer_info"))
+            add_ssh_key_to_authorized_keys(customer.system_user_name, form.instance.key)
+            form.instance.owner = customer
+            form.save()
+            return redirect("keys_manager")
     else:
         form = SSHKeyForm(initial={"ssh_public_key": ""})
 
-    return render(
-        request, "customers/customer_info.html", {"customer": customer, "form": form}
+    return render(request, "customers/keys.html", {"customer": customer, "form": form})
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_ssh_key(request: HttpRequest, key_uid: UUID) -> HttpResponse:
+    ssh_key = get_object_or_404(SSHKey, uid=key_uid, owner=request.user)
+
+    result = remove_ssh_key_from_authorized_keys(
+        ssh_key.key, ssh_key.owner.system_user_name
     )
+
+    if result is True:
+        ssh_key.delete()
+        messages.success(request, "SSH Key deleted successfully.")
+    else:
+        messages.error(request, "SSH Key not found in authorized_keys.")
+
+    return redirect("keys_manager")
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def bots_manager(request):
+    customer = request.user
+    return render(request, "customers/bots.html", {"customer": customer})
 
 
 @csrf_exempt

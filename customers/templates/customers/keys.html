@@ -1,0 +1,56 @@
+{% extends 'partials/layout.html' %}
+{% load formify %}
+{% load custom_filters %}
+
+{% block title %}SSH Keys Management - User Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">My SSH Keys</h1>
+<div class="mb-12">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold">Manage Your SSH Keys</h2>
+        <button id="add-key-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add SSH Key</button>
+    </div>
+    <ul id="keys-list" class="bg-white shadow-md p-4 rounded">
+        {% for key in customer.ssh_keys.all %}
+            <li class="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-gray-200 py-4">
+                <div class="flex-1 mb-2 md:mb-0">
+                    <h3 class="font-semibold text-lg">{{ key.name }}</h3>
+                    <p class="text-sm text-gray-600 break-all" title="{{ key.key }}">{{ key.key|shorten_ssh_key }}</p>
+                </div>
+                <div class="ml-0 md:ml-4">
+                    <form method="post" action="{% url 'delete_ssh_key' key.uid %}" onsubmit="return confirm('Are you sure you want to delete this SSH Key?');">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-500 hover:text-red-700">Delete</button>
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Add SSH Key Form (hidden by default, will be shown when clicking Add SSH Key) -->
+<div id="add-ssh-key-form" class="bg-white shadow-md p-6 rounded mb-12 hidden">
+    <h2 class="text-xl font-semibold mb-4">Add a New SSH Key</h2>
+    <form method="post" id="ssh-key-form">
+        {% csrf_token %}
+
+        {% render_form form %}
+
+        {% render_submit text='Save key' css_class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %}
+
+        <button type="button" id="cancel-key-btn" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 ml-2">Cancel</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('add-key-btn').addEventListener('click', function() {
+        document.getElementById('add-ssh-key-form').classList.toggle('hidden');
+    });
+
+    document.getElementById('cancel-key-btn').addEventListener('click', function() {
+        document.getElementById('ssh-key-form').reset();
+        document.getElementById('add-ssh-key-form').classList.add('hidden');
+    });
+</script>
+{% endblock %}
