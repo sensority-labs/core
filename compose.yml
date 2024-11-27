@@ -38,8 +38,7 @@ services:
       - sensority-labs
 
   bot-builder:
-#    image: ghcr.io/sensority-labs/bot-builder
-    image: bbuilder
+    image: ghcr.io/sensority-labs/bot-builder
     environment:
       GITHUB_TOKEN: ${GITHUB_PULL_TOKEN}
       NATS_URL: "nats://nats:4222"
@@ -68,9 +67,13 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/sensority_core
       WEBHOOK_URL: "http://bot-builder:5005/build"
+    volumes:
+      - user_home_data:/home
+      - etc_data:/etc
+    restart: always
 
   db:
-    image: postgres:17.2
+    image: postgres:17.2-alpine
     ports:
       - "5432:5432"
     volumes:
@@ -83,6 +86,8 @@ services:
 volumes:
   db_data:
   nats:
+  user_home_data:
+  etc_data:
 
 networks:
   sensority-labs:
