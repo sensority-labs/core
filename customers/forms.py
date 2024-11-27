@@ -4,18 +4,6 @@ from django.forms import ModelForm
 from customers.models import SSHKey
 
 
-# class SSHKeyForm(forms.Form):
-#     ssh_public_key = forms.CharField(
-#         widget=forms.Textarea, required=False, label="SSH Public Key"
-#     )
-#
-#     def clean_ssh_public_key(self):
-#         data = self.cleaned_data["ssh_public_key"]
-#         if not data.startswith("ssh-rsa "):
-#             raise forms.ValidationError("Invalid SSH public key")
-#         return data
-
-
 class SSHKeyForm(ModelForm):
     class Meta:
         model = SSHKey
@@ -29,5 +17,5 @@ class SSHKeyForm(ModelForm):
     def clean_key(self):
         data = self.cleaned_data["key"]
         if not data.startswith("ssh-rsa "):
-            raise forms.ValidationError("Invalid SSH public key")
+            raise forms.ValidationError(f"Invalid SSH public key: {data}")
         return data

@@ -22,24 +22,20 @@ from customers.system.ssh import (
 
 
 @login_required
-@require_http_methods(["GET"])
-def customer_info(request):
-    return render(request, "customers/index.html", {"customer": request.user})
-
-
-@login_required
 @require_http_methods(["GET", "POST"])
 def keys_manager(request: HttpRequest) -> HttpResponse:
     customer = cast(Customer, request.user)
     if request.method == "POST":
         form = SSHKeyForm(request.POST)
         if form.is_valid():
-            add_ssh_key_to_authorized_keys(customer.system_user_name, form.instance.key)
-            form.instance.owner = customer
-            form.save()
+            ssh_key = form.save(commit=False)
+            ssh_key.owner = request.user
+            add_ssh_key_to_authorized_keys(customer.system_user_name, ssh_key.key)
+            ssh_key.save()
+            messages.success(request, "SSH Key added successfully.")
             return redirect("keys_manager")
     else:
-        form = SSHKeyForm(initial={"ssh_public_key": ""})
+        form = SSHKeyForm()
 
     return render(request, "customers/keys.html", {"customer": customer, "form": form})
 

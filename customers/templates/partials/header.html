@@ -1,4 +1,4 @@
 <div class="flex items-center justify-between p-4 bg-white shadow-md">
-    <h1 class="text-3xl font-bold">User Dashboard</h1>
+    <h1 class="text-3xl font-bold">{% block title %}{% endblock %}</h1>
     <a href="{% url 'account_logout' %}?next=/" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</a>
 </div>
