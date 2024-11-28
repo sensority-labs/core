@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from customers.models import SSHKey
+from customers.models import SSHKey, Bot
 
 
 class SSHKeyForm(ModelForm):
@@ -19,3 +19,11 @@ class SSHKeyForm(ModelForm):
         if not data.startswith("ssh-rsa "):
             raise forms.ValidationError(f"Invalid SSH public key: {data}")
         return data
+
+
+class BotForm(ModelForm):
+    class Meta:
+        model = Bot
+        fields = ["name"]
+        labels = {"name": "Имя"}
+        help_texts = {"name": "Имя бота"}

@@ -168,3 +168,6 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Custom user model
 AUTH_USER_MODEL = "customers.Customer"
+
+# Core settings
+GIT_SERVER_ADDRESS = os.getenv("GIT_SERVER_ADDRESS", "localhost:2222")

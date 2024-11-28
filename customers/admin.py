@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from gettext import gettext as _
-from customers.models import Customer, Watchman, SSHKey
+from customers.models import Customer, Bot, SSHKey
 
 
 @admin.register(Customer)
@@ -53,12 +53,12 @@ class SSHKeyAdmin(admin.ModelAdmin):
     readonly_fields = ["key"]
 
 
-@admin.register(Watchman)
-class WatchmanAdmin(admin.ModelAdmin):
+@admin.register(Bot)
+class BotAdmin(admin.ModelAdmin):
     list_display = ["name", "owner", "repo_url", "container_id"]
     fields = ["name", "owner", "repo_url", "container_id"]
     readonly_fields = ["repo_url", "container_id"]
 
-    def repo_url(self, obj: Watchman):
+    def repo_url(self, obj: Bot):
         owner = obj.owner
         return f"ssh://{owner.system_user_name}@localhost:2222/home/{owner.system_user_name}/repos/{obj.name}.git"

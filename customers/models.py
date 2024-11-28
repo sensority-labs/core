@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
@@ -61,12 +62,19 @@ class SSHKey(Dated, UUIDed):
         return f"{self.owner.email}/{self.key[:20]}"
 
 
-class Watchman(Dated, UUIDed):
+class Bot(Dated, UUIDed):
     name = models.CharField(_("Имя"), max_length=255)
     owner = models.ForeignKey(
-        Customer, verbose_name=_("Клиент"), on_delete=models.CASCADE
+        Customer,
+        verbose_name=_("Клиент"),
+        related_name="bots",
+        on_delete=models.CASCADE,
     )
     container_id = models.CharField(_("ID контейнера"), max_length=255, blank=True)
+
+    @property
+    def repo_url(self):
+        return f"ssh://{self.owner.system_user_name}@{settings.GIT_SERVER_ADDRESS}/home/{self.owner.system_user_name}/repos/{self.name}.git"
 
     def save(self, *args, **kwargs):
         if self._state.adding:

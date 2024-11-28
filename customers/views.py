@@ -13,12 +13,19 @@ from django.http import (
     HttpRequest,
 )
 
-from customers.forms import SSHKeyForm
-from customers.models import Watchman, SSHKey, Customer
+from customers.forms import SSHKeyForm, BotForm
+from customers.models import Bot, SSHKey, Customer
+from customers.system.git import create_new_repo, remove_repo
 from customers.system.ssh import (
     add_ssh_key_to_authorized_keys,
     remove_ssh_key_from_authorized_keys,
 )
+
+
+@login_required
+@require_http_methods(["GET"])
+def index(request: HttpRequest) -> HttpResponse:
+    return redirect("bots_manager")
 
 
 @login_required
@@ -59,10 +66,33 @@ def delete_ssh_key(request: HttpRequest, key_uid: UUID) -> HttpResponse:
 
 
 @login_required
+@require_http_methods(["POST"])
+def delete_bot(request: HttpRequest, bot_uid: UUID) -> HttpResponse:
+    bot = get_object_or_404(Bot, uid=bot_uid, owner=request.user)
+
+    remove_repo(bot.owner.system_user_name, bot.name)
+    bot.delete()
+
+    messages.success(request, f"Bot {bot.name} deleted successfully.")
+    return redirect("bots_manager")
+
+
+@login_required
 @require_http_methods(["GET", "POST"])
 def bots_manager(request):
-    customer = request.user
-    return render(request, "customers/bots.html", {"customer": customer})
+    customer = cast(Customer, request.user)
+    if request.method == "POST":
+        form = BotForm(request.POST)
+        if form.is_valid():
+            bot = form.save(commit=False)
+            bot.owner = request.user
+            create_new_repo(customer.system_user_name, bot.name)
+            bot.save()
+            messages.success(request, "Bot added successfully.")
+            return redirect("bots_manager")
+    else:
+        form = BotForm()
+    return render(request, "customers/bots.html", {"customer": customer, "form": form})
 
 
 @csrf_exempt
@@ -82,7 +112,7 @@ def set_bot_container_id(request):
             return HttpResponseBadRequest("Missing required fields")
 
         watchman = get_object_or_404(
-            Watchman, owner__system_user_name=system_user_name, name=bot_name
+            Bot, owner__system_user_name=system_user_name, name=bot_name
         )
         print(watchman)
         watchman.container_id = container_id
