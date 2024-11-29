@@ -1,3 +1,5 @@
+import enum
+
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
@@ -63,6 +65,13 @@ class SSHKey(Dated, UUIDed):
 
 
 class Bot(Dated, UUIDed):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["owner", "name"], name="unique_owner_bot_name"
+            ),
+        ]
+
     name = models.CharField(_("Имя"), max_length=255)
     owner = models.ForeignKey(
         Customer,
@@ -84,3 +93,41 @@ class Bot(Dated, UUIDed):
 
     def __str__(self):
         return f"{self.owner.email}/{self.name}"
+
+
+class ChannelType(enum.IntEnum):
+    Telegram = 0
+    Webhook = 1
+
+
+class FindingRoute(Dated, UUIDed):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["customer", "bot", "alert_id"],
+                name="unique_customer_bot_alert",
+            ),
+        ]
+
+    customer = models.ForeignKey(
+        Customer,
+        verbose_name=_("Customer"),
+        related_name="routes",
+        on_delete=models.CASCADE,
+    )
+    bot = models.ForeignKey(
+        Bot, verbose_name=_("Bot"), related_name="routes", on_delete=models.CASCADE
+    )
+    alert_id = models.CharField(_("Alert ID"), max_length=255)
+
+    channel_type = models.IntegerField(
+        verbose_name=_("Feedback channel type"),
+        choices=[(tag, tag.name) for tag in ChannelType],
+    )
+    telegram_bot_token = models.CharField(
+        _("Telegram bot token"), max_length=255, blank=True
+    )
+    telegram_chat_id = models.CharField(
+        _("Telegram chat ID"), max_length=255, blank=True
+    )
+    webhook_url = models.URLField(_("Webhook URL"), blank=True)

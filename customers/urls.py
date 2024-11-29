@@ -7,6 +7,9 @@ from customers.views import (
     delete_ssh_key,
     index,
     delete_bot,
+    routes_manager,
+    delete_route,
+    edit_route,
 )
 
 urlpatterns = [
@@ -15,5 +18,8 @@ urlpatterns = [
     path("bots/<uuid:bot_uid>/delete/", delete_bot, name="delete_bot"),
     path("keys/", keys_manager, name="keys_manager"),
     path("keys/<uuid:key_uid>/delete/", delete_ssh_key, name="delete_ssh_key"),
+    path("routes/", routes_manager, name="routes_manager"),
+    path("routes/<uuid:route_uid>/", edit_route, name="edit_route"),
+    path("routes/<uuid:route_uid>/delete/", delete_route, name="delete_route"),
     path("set-bot-container-id/", set_bot_container_id, name="set_bot_container_id"),
 ]

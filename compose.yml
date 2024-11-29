@@ -47,6 +47,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - sensority-labs
 
   core:
     build:
@@ -71,6 +73,8 @@ services:
       - user_home_data:/home
       - etc_data:/etc
     restart: always
+    networks:
+      - sensority-labs
 
   db:
     image: postgres:17.2-alpine
@@ -82,6 +86,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=sensority_core
+    networks:
+        - sensority-labs
 
 volumes:
   db_data:

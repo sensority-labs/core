@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from customers.models import SSHKey, Bot
+from customers.models import SSHKey, Bot, FindingRoute
 
 
 class SSHKeyForm(ModelForm):
@@ -27,3 +27,24 @@ class BotForm(ModelForm):
         fields = ["name"]
         labels = {"name": "Имя"}
         help_texts = {"name": "Имя бота"}
+
+
+class RouteForm(ModelForm):
+    class Meta:
+        model = FindingRoute
+        fields = [
+            "bot",
+            "alert_id",
+            "channel_type",
+            "telegram_bot_token",
+            "telegram_chat_id",
+            "webhook_url",
+        ]
+        labels = {
+            "bot": "Бот",
+            "alert_id": "ID Алерта",
+            "channel_type": "Тип канала",
+            "telegram_bot_token": "Токен бота",
+            "telegram_chat_id": "ID чата",
+            "webhook_url": "URL вебхука",
+        }

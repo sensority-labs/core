@@ -27,7 +27,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 # send repo files via webhook
-status_http_code=$(curl -s -o /tmp/curl_output -w "%{http_code}" -X POST "$WEBHOOK_URL/$BOT_NAME" \
+status_http_code=$(curl -s -o /tmp/curl_output -w "%{http_code}" -X POST "$WEBHOOK_URL/$SYSTEM_USER_NAME/$BOT_NAME" \
     -F file=@"$TEMP_DIR/src.tar.gz")
 if [ "$status_http_code" -ne 200 ]; then
     echo "Docker build failed. Reverting changes..." >&2
