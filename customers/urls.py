@@ -10,6 +10,7 @@ from customers.views import (
     routes_manager,
     delete_route,
     edit_route,
+    get_route,
 )
 
 urlpatterns = [
@@ -21,5 +22,11 @@ urlpatterns = [
     path("routes/", routes_manager, name="routes_manager"),
     path("routes/<uuid:route_uid>/", edit_route, name="edit_route"),
     path("routes/<uuid:route_uid>/delete/", delete_route, name="delete_route"),
+    # Internal routes
+    path(
+        "get-route/<str:system_user_name>/<str:bot_name>/<str:alert_id>/",
+        get_route,
+        name="get_route",
+    ),
     path("set-bot-container-id/", set_bot_container_id, name="set_bot_container_id"),
 ]
