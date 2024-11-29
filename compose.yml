@@ -17,6 +17,7 @@ services:
     image: ghcr.io/sensority-labs/vajdos
     environment:
       NATS_URL: "nats://nats:4222"
+      CORE_URL: "http://core:8000"
     depends_on:
       - nats
     networks:
