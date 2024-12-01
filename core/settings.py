@@ -26,12 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-5+8z%0d=93p*!)sh#h#+x98e3d^z3i%o2zk1)pt5y@zxvxe&z5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "localhost",
     "my.sensority.app",
     "core",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://my.sensority.app",
 ]
 
 
