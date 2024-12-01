@@ -31,7 +31,7 @@ RUN echo "PasswordAuthentication no" >> /etc/ssh/sshd_config && \
 RUN groupadd -r observers
 
 # Copy your custom files into the container
-COPY srv /srv
+COPY shell_scripts /srv
 RUN chmod -R 755 /srv
 
 ######################

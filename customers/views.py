@@ -15,6 +15,7 @@ from django.http import (
     JsonResponse,
 )
 
+from customers.decorators import require_token
 from customers.forms import SSHKeyForm, BotForm, RouteForm
 from customers.models import Bot, SSHKey, Customer, FindingRoute
 from customers.system.git import create_new_repo, remove_repo
@@ -145,6 +146,7 @@ def delete_route(request: HttpRequest, route_uid: UUID) -> HttpResponse:
 
 
 @csrf_exempt
+@require_token
 @require_http_methods(["POST"])
 def set_bot_container_id(request):
     print("=== set_bot_container_id ===")
@@ -174,6 +176,7 @@ def set_bot_container_id(request):
         return HttpResponseBadRequest("Invalid JSON")
 
 
+@require_token
 @require_http_methods(["GET"])
 def get_route(
     request: HttpRequest, system_user_name: str, bot_name: str, alert_id: str
