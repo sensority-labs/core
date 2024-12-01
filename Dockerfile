@@ -59,9 +59,4 @@ COPY . /app
 ENV IS_DOCKER=true
 ENV PYTHONUNBUFFERED=1
 
-# Declare the build argument
-ARG DATABASE_URL
-# Use the build argument as an environment variable
-ENV DATABASE_URL=${DATABASE_URL}
-
 ENTRYPOINT ["/app/entrypoint.sh"]
