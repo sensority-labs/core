@@ -4,7 +4,7 @@ echo "Unsealing the cradle..."
 
 # Read the incoming commit details
 while read _ newrev _; do
-  container_id=$(/app/srv/deploy_bot.sh "$newrev")
+  container_id=$(/app/shell_scripts/deploy_bot.sh "$newrev")
   status=$?
   if [ $status -ne 0 ]; then
     echo "Failed to deploy the commit $newrev"
