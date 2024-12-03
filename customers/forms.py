@@ -48,3 +48,9 @@ class RouteForm(ModelForm):
             "telegram_chat_id": "ID чата",
             "webhook_url": "URL вебхука",
         }
+
+    def __init__(self, *args, **kwargs):
+        customer = kwargs.pop("customer", None)
+        super(RouteForm, self).__init__(*args, **kwargs)
+        if customer:
+            self.fields["bot"].queryset = Bot.objects.filter(owner=customer)

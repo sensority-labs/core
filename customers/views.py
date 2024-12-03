@@ -17,6 +17,7 @@ from django.http import (
 
 from customers.decorators import require_token
 from customers.forms import SSHKeyForm, BotForm, RouteForm
+
 from customers.models import Bot, SSHKey, Customer, FindingRoute
 from customers.system.git import create_new_repo, remove_repo
 from customers.system.ssh import (
@@ -104,7 +105,7 @@ def routes_manager(request: HttpRequest) -> HttpResponse:
     customer = cast(Customer, request.user)
     if request.method == "POST":
         bot = get_object_or_404(Bot, owner=customer, uid=request.POST["bot"])
-        form = RouteForm(request.POST)
+        form = RouteForm(request.POST, customer=customer)
         if form.is_valid():
             route = form.save(commit=False)
             route.customer = customer
@@ -113,7 +114,7 @@ def routes_manager(request: HttpRequest) -> HttpResponse:
             messages.success(request, "Route added successfully.")
             return redirect("routes_manager")
     else:
-        form = RouteForm()
+        form = RouteForm(customer=customer)
     return render(
         request,
         "customers/routes.html",
@@ -126,13 +127,13 @@ def routes_manager(request: HttpRequest) -> HttpResponse:
 def edit_route(request: HttpRequest, route_uid: UUID) -> HttpResponse:
     route = get_object_or_404(FindingRoute, uid=route_uid, customer=request.user)
     if request.method == "POST":
-        form = RouteForm(request.POST, instance=route)
+        form = RouteForm(request.POST, instance=route, customer=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Route updated successfully.")
             return redirect("routes_manager")
     else:
-        form = RouteForm(instance=route)
+        form = RouteForm(instance=route, customer=request.user)
     return render(request, "customers/route_edit.html", {"route": route, "form": form})
 
 
