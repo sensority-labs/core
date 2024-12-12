@@ -13,8 +13,8 @@ while read _ newrev _; do
   fi
 done
 
-echo "The seals are removed, the watchman on the watch!"
+echo "The seals are removed, the bot is ready!"
 echo "Watchman ID: $container_id"
 echo "========================"
 
-exit 1
+exit 0
