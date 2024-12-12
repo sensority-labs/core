@@ -14,7 +14,7 @@ while read _ newrev _; do
 done
 
 echo "The seals are removed, the bot is ready!"
-echo "Watchman ID: $container_id"
+echo "Bot ID: $container_id"
 echo "========================"
 
 exit 0
