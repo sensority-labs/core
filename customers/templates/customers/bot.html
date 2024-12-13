@@ -68,13 +68,13 @@
         };
 
         ws.onmessage = function (event) {
-            if (typeof event.data === 'string') {
+            try {
+                const message = JSON.parse(event.data);
+                container.innerHTML += `<p>${message.time}: ${message.log}</p>`;
+                container.scrollTop = logsContainer.scrollHeight;
+            } catch (error) {
                 container.innerHTML += `<p>${event.data}</p>`;
-                return;
             }
-            const message = JSON.parse(event.data);
-            container.innerHTML += `<p>${message.time}: ${message.log}</p>`;
-            container.scrollTop = logsContainer.scrollHeight;
         };
     }
 
