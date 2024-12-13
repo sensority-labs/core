@@ -1,13 +1,14 @@
 <div class="w-1/6 bg-white shadow-md p-4">
     <ul class="mt-6">
         <li class="mb-2">
-            <a href="{% url 'bots_manager' %}" class="block text-gray-7к00 hover:text-blue-500">Bots</a>
-        </li>
-        <li class="mb-2">
-            <a href="{% url 'keys_manager' %}" class="block text-gray-700 hover:text-blue-500">SSH Keys</a>
+            <a href="{% url 'bots_manager' %}" class="block text-gray-700 hover:text-blue-500">Bots</a>
         </li>
         <li>
             <a href="{% url 'routes_manager' %}" class="block text gray-700 hover:text-blue-500">Routes</a>
+        </li>
+        <hr class="my-6">
+        <li class="mb-2">
+            <a href="{% url 'profile' %}" class="block text-gray-700 hover:text-blue-500">Profile</a>
         </li>
     </ul>
 </div>

@@ -22,7 +22,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for route in routes %}
+            {% for route in findingroute_list %}
             <tr class="border-b">
                 <td class="p-4">{{ route.bot.name }}</td>
                 <td class="p-4">{{ route.alert_id }}</td>
@@ -43,7 +43,7 @@
     <!-- Add route Form (hidden by default, will be shown when clicking Add route Key) -->
     <div id="add-route-form" class="bg-white shadow-md p-6 rounded mb-12 {% if form.errors %}block{% else %}hidden{% endif %}">
         <h2 class="text-xl font-semibold mb-4">Add a new route</h2>
-        <form method="post" id="route-form">
+        <form method="post" action="{% url 'new_route' %}" id="route-form">
             {% csrf_token %}
 
             {% render_form form %}

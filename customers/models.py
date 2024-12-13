@@ -85,12 +85,6 @@ class Bot(Dated, UUIDed):
     def repo_url(self):
         return f"ssh://{self.owner.system_user_name}@{settings.GIT_SERVER_ADDRESS}/home/{self.owner.system_user_name}/repos/{self.name}.git"
 
-    def save(self, *args, **kwargs):
-        if self._state.adding:
-            # Create a new repo
-            create_new_repo(self.owner.system_user_name, self.name)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self.owner.email}/{self.name}"
 
@@ -101,14 +95,6 @@ class ChannelType(enum.IntEnum):
 
 
 class FindingRoute(Dated, UUIDed):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["customer", "bot", "alert_id"],
-                name="unique_customer_bot_alert",
-            ),
-        ]
-
     customer = models.ForeignKey(
         Customer,
         verbose_name=_("Customer"),

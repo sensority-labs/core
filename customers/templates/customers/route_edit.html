@@ -29,7 +29,7 @@
         event.preventDefault();
 
         if (confirm('Are you sure you want to delete this route?')) {
-            fetch('{% url "delete_route" route.uid %}', {
+            fetch('{% url "delete_route" object.uid %}', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
