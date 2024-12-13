@@ -181,3 +181,4 @@ AUTH_USER_MODEL = "customers.Customer"
 # Core settings
 GIT_SERVER_ADDRESS = os.getenv("GIT_SERVER_ADDRESS", "localhost:2222")
 API_ACCESS_TOKEN = os.getenv("API_ACCESS_TOKEN")
+LOGS_STREAMER_URL = os.getenv("LOGS_STREAMER_URL", "wss://logs.sensority.app/logs/")

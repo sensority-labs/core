@@ -1,14 +1,21 @@
 {% extends 'partials/layout.html' %}
+{% load settings_value %}
 {% load formify %}
 
 {% block title %}Bots Management - User Dashboard{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-between mb-4">
-    <h2 class="text-xl font-semibold">{{ bot.name }}</h2>
+<div class="mb-4 text-xl font-semibold">Name: {{ bot.name }}</div>
+<div class="mb-4">
+    <div class="bg-white shadow-md p-6 rounded mb-12">
+        <div class="mb-2 text-l font-semibold">Details:</div>
+        <div>ContainerID: {{ bot.container_id|slice:":12" }}</div>
+        <div>Repo URL: {{ bot.repo_url }}</div>
+    </div>
 </div>
-<div class="mb-12">
-    <div id="add-bot-form" class="bg-white shadow-md p-6 rounded mb-12">
+<div class="mb-4 text-xl font-semibold">Edit:</div>
+<div class="mb-4">
+    <div class="bg-white shadow-md p-6 rounded mb-12">
         <form method="post" id="bot-form">
             {% csrf_token %}
 
@@ -19,12 +26,67 @@
             <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 ml-2" onclick="window.location.href='{% url 'bots_manager' %}'">Cancel</button>
         </form>
     </div>
-
+</div>
+<div class="mb-4 text-xl font-semibold">Logs:</div>
+    <div class="bg-white shadow-md p-6 rounded mb-12 {% if not bot.container_id %} hidden {% endif %}">
+        <div class="flex items-center mb-4">
+            <div class="grow text-right px-2 py-2"><label for="tail">Tail:</label></div>
+            <div class="flex-none w-1/3">
+                <div class="relative">
+                    <input id="tail" type="number" class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-20 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"/>
+                    <button id="retrieve" class="absolute right-1 top-1 rounded bg-slate-800 py-1 px-2.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+                      Retrieve
+                    </button>
+              </div>
+            </div>
+        </div>
+        <div id="logs-container" class="rounded p-4 bg-black text-white overflow-scroll h-96"></div>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+{% if bot.container_id %}
 <script>
+    const logsContainer = document.getElementById('logs-container');
+    const tailInput = document.getElementById('tail');
+    const retrieveButton = document.getElementById('retrieve');
+
+    let tail = 100; // default tail
+    tailInput.value = tail;
+
+    let ws;
+
+    const botContainerId = "{{ bot.container_id }}";
+
+    function getWSData(botContainerId, tail, container) {
+        const wsURL = `{% settings_value "LOGS_STREAMER_URL" %}${botContainerId}?tail=${tail}`;
+        ws = new WebSocket(wsURL);
+
+        ws.onerror = function (error) {
+            console.error('Error:', error);
+        };
+
+        ws.onmessage = function (event) {
+            if (typeof event.data === 'string') {
+                container.innerHTML += `<p>${event.data}</p>`;
+                return;
+            }
+            const message = JSON.parse(event.data);
+            container.innerHTML += `<p>${message.time}: ${message.log}</p>`;
+            container.scrollTop = logsContainer.scrollHeight;
+        };
+    }
+
+    getWSData(botContainerId, tail, logsContainer);
+
+    retrieveButton.addEventListener('click', function () {
+        tail = tailInput.value;
+        logsContainer.innerHTML = '';
+        ws.close();
+        getWSData(botContainerId, tail, logsContainer);
+    });
 
 </script>
+{% endif %}
 {% endblock %}
