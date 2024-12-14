@@ -18,7 +18,11 @@ from customers.views.bots import (
     EditBot,
     DeleteBot,
     set_bot_container_id,
+    start_bot,
+    stop_bot,
+    rebuild_bot,
 )
+
 
 urlpatterns = [
     path("", index, name="customers_index"),
@@ -29,6 +33,9 @@ urlpatterns = [
     path("bots/new", CreateBot.as_view(), name="new_bot"),
     path("bots/<uuid:pk>/", EditBot.as_view(), name="edit_bot"),
     path("bots/<uuid:pk>/delete/", DeleteBot.as_view(), name="delete_bot"),
+    path("bots/<uuid:pk>/start/", start_bot, name="start_bot"),
+    path("bots/<uuid:pk>/stop/", stop_bot, name="stop_bot"),
+    path("bots/<uuid:pk>/rebuild/", rebuild_bot, name="rebuild_bot"),
     path("routes/", RoutesList.as_view(), name="routes_manager"),
     path("routes/new", CreateRoute.as_view(), name="new_route"),
     path("routes/<uuid:pk>/", EditRoute.as_view(), name="edit_route"),

@@ -61,17 +61,17 @@ class BotMan:
     botman_url: str = settings.BOTMAN_URL
 
     def _request(self, action: BotmanAction) -> bool | dict:
-        url = urljoin(self.botman_url, f"/{self.container_id}/{action}")
-
+        url = urljoin(self.botman_url, f"/{self.container_id}/{action.value}")
+        logger.info(f"Botman request: {url}")
         try:
             response = requests.get(url)
         except requests.exceptions.RequestException as e:
-            logger.error(f"Botman error: {str(e)}")
+            logger.error(f"Botman request error: {str(e)}")
             raise BotmanError(str(e))
 
         if response.status_code != HTTPStatus.OK:
             msg = f"Botman error: {response.text}"
-            logger.error(f"Botman error: {msg}")
+            logger.error(f"Botman non 200 response: {msg}")
             raise BotmanError(msg)
 
         try:

@@ -1,5 +1,7 @@
 import json
+import logging
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseBadRequest, HttpResponse
@@ -13,6 +15,8 @@ from customers.forms import BotForm
 from customers.models import Bot
 from customers.system.git import create_new_repo, remove_repo
 from customers.system.utils import BotMan
+
+logger = logging.getLogger(__name__)
 
 
 class ListBots(LoginRequiredMixin, ListView):
@@ -76,21 +80,33 @@ class DeleteBot(LoginRequiredMixin, DeleteView):
 @login_required
 def start_bot(request, pk):
     bot = get_object_or_404(Bot, owner=request.user, pk=pk)
-    BotMan(bot.container_id).start()
+    try:
+        BotMan(container_id=bot.container_id).start()
+    except Exception as e:
+        logger.error(e)
+        messages.error(request=request, message=f"Failed to start the bot: {e}")
     return redirect("edit_bot", pk=pk)
 
 
 @login_required
 def stop_bot(request, pk):
     bot = get_object_or_404(Bot, owner=request.user, pk=pk)
-    BotMan(bot.container_id).stop()
+    try:
+        BotMan(container_id=bot.container_id).stop()
+    except Exception as e:
+        logger.error(e)
+        messages.error(request=request, message=f"Failed to stop the bot: {e}")
     return redirect("edit_bot", pk=pk)
 
 
 @login_required
 def rebuild_bot(request, pk):
     bot = get_object_or_404(Bot, owner=request.user, pk=pk)
-    BotMan(bot.container_id).rebuild()
+    try:
+        BotMan(container_id=bot.container_id).rebuild()
+    except Exception as e:
+        logger.error(e)
+        messages.error(request=request, message=f"Failed to rebuild the bot: {e}")
     return redirect("edit_bot", pk=pk)
 
 
