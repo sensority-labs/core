@@ -17,7 +17,7 @@
         </ul>
     </div>
 {% elif messages %}
-    <div class="absolute bottom-0 right-0 left-0 text-white rounded shadow-lg z-50" role="alert">
+    <div class="bottom-0 right-0 left-0 text-white rounded shadow-lg z-50 fixed" role="alert">
     <button onclick="this.parentElement.style.display='none';" class="absolute top-0 right-0 m-2 bg-transparent text-white text-xl font-bold">&times;</button>
         {% for message in messages %}
             <div class="{% if message.tags == 'error' %} bg-red-600 {% else %} bg-teal-600 {% endif %}  px-4 py-2 rounded">
