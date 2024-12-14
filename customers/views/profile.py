@@ -1,10 +1,11 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import UpdateView
 
 from customers.forms import SSHKeyForm
 from customers.models import Customer
 
 
-class ProfileView(UpdateView):
+class ProfileView(LoginRequiredMixin, UpdateView):
     model = Customer
     fields = ["email"]
     template_name = "customers/profile.html"

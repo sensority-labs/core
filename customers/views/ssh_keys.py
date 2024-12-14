@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.views.generic import CreateView, DeleteView
@@ -6,7 +7,7 @@ from customers.forms import SSHKeyForm
 from customers.models import SSHKey
 
 
-class CreateSSHKeyView(CreateView):
+class CreateSSHKeyView(LoginRequiredMixin, CreateView):
     model = SSHKey
     form_class = SSHKeyForm
     template_name = "customers/profile.html"
@@ -31,7 +32,7 @@ class CreateSSHKeyView(CreateView):
         return redirect("profile").url
 
 
-class DeleteSSHKeyView(DeleteView):
+class DeleteSSHKeyView(LoginRequiredMixin, DeleteView):
     model = SSHKey
 
     def get_queryset(self):

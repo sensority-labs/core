@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import model_to_dict
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -9,7 +10,7 @@ from customers.forms import RouteForm
 from customers.models import FindingRoute
 
 
-class RoutesList(ListView):
+class RoutesList(LoginRequiredMixin, ListView):
     model = FindingRoute
     template_name = "customers/routes.html"
 
@@ -22,7 +23,7 @@ class RoutesList(ListView):
         return context
 
 
-class CreateRoute(CreateView):
+class CreateRoute(LoginRequiredMixin, CreateView):
     model = FindingRoute
     fields = [
         "bot",
@@ -41,7 +42,7 @@ class CreateRoute(CreateView):
         return redirect("routes_manager").url
 
 
-class EditRoute(UpdateView):
+class EditRoute(LoginRequiredMixin, UpdateView):
     model = FindingRoute
     fields = [
         "bot",
@@ -60,7 +61,7 @@ class EditRoute(UpdateView):
         return redirect("routes_manager").url
 
 
-class DeleteRoute(DeleteView):
+class DeleteRoute(LoginRequiredMixin, DeleteView):
     model = FindingRoute
 
     def get_queryset(self):

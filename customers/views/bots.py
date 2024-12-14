@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -12,7 +13,7 @@ from customers.models import Bot
 from customers.system.git import create_new_repo, remove_repo
 
 
-class ListBots(ListView):
+class ListBots(LoginRequiredMixin, ListView):
     model = Bot
     template_name = "customers/bots.html"
 
@@ -26,7 +27,7 @@ class ListBots(ListView):
         return context
 
 
-class CreateBot(CreateView):
+class CreateBot(LoginRequiredMixin, CreateView):
     model = Bot
     fields = ["name"]
 
@@ -39,7 +40,7 @@ class CreateBot(CreateView):
         return redirect("bots_manager").url
 
 
-class EditBot(UpdateView):
+class EditBot(LoginRequiredMixin, UpdateView):
     model = Bot
     fields = ["name"]
     template_name = "customers/bot.html"
@@ -56,7 +57,7 @@ class EditBot(UpdateView):
         return redirect("bots_manager").url
 
 
-class DeleteBot(DeleteView):
+class DeleteBot(LoginRequiredMixin, DeleteView):
     model = Bot
 
     def form_valid(self, form):
