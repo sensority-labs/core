@@ -103,7 +103,9 @@ def stop_bot(request, pk):
 def recreate_bot(request, pk):
     bot = get_object_or_404(Bot, owner=request.user, pk=pk)
     try:
-        BotMan(container_id=bot.container_id).recreate()
+        new_container_id = BotMan(container_id=bot.container_id).recreate()
+        bot.container_id = new_container_id
+        bot.save()
     except Exception as e:
         logger.error(e)
         messages.error(request=request, message=f"Failed to recreate the bot: {e}")

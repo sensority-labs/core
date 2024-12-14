@@ -67,7 +67,7 @@ class BotMan:
             response = requests.get(url)
         except requests.exceptions.RequestException as e:
             logger.error(f"Botman request error: {str(e)}")
-            raise BotmanError(str(e))
+            raise BotmanError(e)
 
         if response.status_code != HTTPStatus.OK:
             msg = f"Botman error: {response.text}"
@@ -88,10 +88,10 @@ class BotMan:
     def remove(self):
         return self._request(BotmanAction.REMOVE)
 
-    def recreate(self):
-        return self._request(BotmanAction.RECREATE)
+    def recreate(self) -> str:
+        return self._request(BotmanAction.RECREATE).get("containerId")
 
-    def status(self):
+    def status(self) -> str:
         try:
             bot_status_response = self._request(BotmanAction.GET_STATUS)
             bot_status = bot_status_response.get("status", BotStatus.UNKNOWN)
