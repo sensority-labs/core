@@ -100,13 +100,13 @@ def stop_bot(request, pk):
 
 
 @login_required
-def rebuild_bot(request, pk):
+def recreate_bot(request, pk):
     bot = get_object_or_404(Bot, owner=request.user, pk=pk)
     try:
-        BotMan(container_id=bot.container_id).rebuild()
+        BotMan(container_id=bot.container_id).recreate()
     except Exception as e:
         logger.error(e)
-        messages.error(request=request, message=f"Failed to rebuild the bot: {e}")
+        messages.error(request=request, message=f"Failed to recreate the bot: {e}")
     return redirect("edit_bot", pk=pk)
 
 

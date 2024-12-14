@@ -24,7 +24,7 @@ class BotmanAction(enum.Enum):
     START = "start"
     STOP = "stop"
     REMOVE = "remove"
-    REBUILD = "rebuild"
+    RECREATE = "recreate"
     GET_STATUS = "status"
 
 
@@ -88,8 +88,8 @@ class BotMan:
     def remove(self):
         return self._request(BotmanAction.REMOVE)
 
-    def rebuild(self):
-        return self._request(BotmanAction.REBUILD)
+    def recreate(self):
+        return self._request(BotmanAction.RECREATE)
 
     def status(self):
         try:
