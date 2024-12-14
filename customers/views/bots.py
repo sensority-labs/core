@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
@@ -11,7 +12,7 @@ from customers.decorators import require_token
 from customers.forms import BotForm
 from customers.models import Bot
 from customers.system.git import create_new_repo, remove_repo
-from customers.system.utils import get_bot_status
+from customers.system.utils import BotMan
 
 
 class ListBots(LoginRequiredMixin, ListView):
@@ -52,7 +53,7 @@ class EditBot(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["customer"] = self.request.user
-        context["status"] = get_bot_status(self.object.container_id)
+        context["status"] = BotMan(self.object.container_id).status()
         return context
 
     def get_success_url(self):
@@ -65,10 +66,32 @@ class DeleteBot(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         bot = self.get_object()
         remove_repo(self.request.user.system_user_name, bot.name)
+        BotMan(bot.container_id).remove()
         return super().form_valid(form)
 
     def get_success_url(self):
         return redirect("bots_manager").url
+
+
+@login_required
+def start_bot(request, pk):
+    bot = get_object_or_404(Bot, owner=request.user, pk=pk)
+    BotMan(bot.container_id).start()
+    return redirect("edit_bot", pk=pk)
+
+
+@login_required
+def stop_bot(request, pk):
+    bot = get_object_or_404(Bot, owner=request.user, pk=pk)
+    BotMan(bot.container_id).stop()
+    return redirect("edit_bot", pk=pk)
+
+
+@login_required
+def rebuild_bot(request, pk):
+    bot = get_object_or_404(Bot, owner=request.user, pk=pk)
+    BotMan(bot.container_id).rebuild()
+    return redirect("edit_bot", pk=pk)
 
 
 @csrf_exempt
