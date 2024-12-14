@@ -70,7 +70,8 @@ class DeleteBot(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         bot = self.get_object()
         remove_repo(self.request.user.system_user_name, bot.name)
-        BotMan(bot.container_id).remove()
+        if bot.container_id:
+            BotMan(bot.container_id).remove()
         return super().form_valid(form)
 
     def get_success_url(self):

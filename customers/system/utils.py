@@ -61,8 +61,8 @@ class BotMan:
     botman_url: str = settings.BOTMAN_URL
 
     def _request(self, action: BotmanAction) -> bool | dict:
-        url = urljoin(self.botman_url, f"/{self.container_id}/{action.value}")
-        logger.info(f"Botman request: {url}")
+        url = f"{self.botman_url}/{self.container_id}/{action.value}"
+        print(f"Botman request: {url}")
         try:
             response = requests.get(url)
         except requests.exceptions.RequestException as e:
@@ -86,7 +86,13 @@ class BotMan:
         return self._request(BotmanAction.STOP)
 
     def remove(self):
-        return self._request(BotmanAction.REMOVE)
+        try:
+            return self._request(BotmanAction.REMOVE)
+        except BotmanError as e:
+            logger.error(f"Failed to remove bot {self.container_id}")
+            if "No such container" in str(e):
+                return True
+            raise e
 
     def recreate(self) -> str:
         return self._request(BotmanAction.RECREATE).get("containerId")
