@@ -11,6 +11,7 @@ from customers.decorators import require_token
 from customers.forms import BotForm
 from customers.models import Bot
 from customers.system.git import create_new_repo, remove_repo
+from customers.system.utils import get_bot_status
 
 
 class ListBots(LoginRequiredMixin, ListView):
@@ -51,6 +52,7 @@ class EditBot(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["customer"] = self.request.user
+        context["status"] = get_bot_status(self.object.container_id)
         return context
 
     def get_success_url(self):

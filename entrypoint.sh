@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 # Share env variables to all users
 echo "WEBHOOK_URL=$WEBHOOK_URL" > /etc/environment
+echo "BOTMAN_URL=$BOTMAN_URL" > /etc/environment
 
 # Run sshd service
 service ssh start

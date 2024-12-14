@@ -16,13 +16,13 @@ from shared.models import Dated, UUIDed
 
 
 class Customer(Dated, UUIDed, AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_("Адрес email"), unique=True, db_index=True)
+    email = models.EmailField(_("Email"), unique=True, db_index=True)
     system_user_name = models.CharField(
         _("Имя пользователя GIT"), max_length=255, blank=True
     )
-    is_staff = models.BooleanField(_("Сотрудник"), default=False)
-    is_active = models.BooleanField(_("Активен"), default=True)
-    date_joined = models.DateTimeField(_("Дата регистрации"), default=timezone.now)
+    is_staff = models.BooleanField(_("Staff"), default=False)
+    is_active = models.BooleanField(_("Active"), default=True)
+    date_joined = models.DateTimeField(_("Joined at"), default=timezone.now)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -42,11 +42,11 @@ class Customer(Dated, UUIDed, AbstractBaseUser, PermissionsMixin):
 
 
 class SSHKey(Dated, UUIDed):
-    name = models.CharField(_("Имя"), max_length=255, blank=True)
-    key = models.CharField(_("Ключ"), max_length=4096)
+    name = models.CharField(_("Key name"), max_length=255, blank=True)
+    key = models.CharField(_("Key content"), max_length=4096)
     owner = models.ForeignKey(
         Customer,
-        verbose_name=_("Клиент"),
+        verbose_name=_("Owner"),
         related_name="ssh_keys",
         on_delete=models.CASCADE,
     )
@@ -72,14 +72,14 @@ class Bot(Dated, UUIDed):
             ),
         ]
 
-    name = models.CharField(_("Имя"), max_length=255)
+    name = models.CharField(_("Name"), max_length=255)
     owner = models.ForeignKey(
         Customer,
-        verbose_name=_("Клиент"),
+        verbose_name=_("Customer"),
         related_name="bots",
         on_delete=models.CASCADE,
     )
-    container_id = models.CharField(_("ID контейнера"), max_length=255, blank=True)
+    container_id = models.CharField(_("Container ID"), max_length=255, blank=True)
 
     @property
     def repo_url(self):
