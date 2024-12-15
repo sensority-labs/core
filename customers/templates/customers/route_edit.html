@@ -13,7 +13,7 @@
 
             {% render_form form %}
 
-            {% render_submit text='Save route' css_class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %}
+            {% render_submit text='Save route' css_class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 hasLoader" %}
 
             <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 ml-2" onclick="window.location.href='{% url 'routes_manager' %}'">Cancel</button>
             <button id="delete-button" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-800 ml-2">Delete</button>

@@ -12,7 +12,7 @@
     <div>Repo URL: {{ bot.repo_url }}</div>
     <div>Status: {{ status }}</div>
     <div class="mt-4">
-        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 disabled:hover:bg-green-500"
+        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 disabled:hover:bg-green-500 hasLoader"
                 {% if status == 'running' %} disabled {% endif %}
                 onclick="window.location.href='{% url 'start_bot' bot.uid %}'"
                 title="Start bot">
@@ -20,7 +20,7 @@
               <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
             </svg>
         </button>
-        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 disabled:hover:bg-red-500"
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 disabled:hover:bg-red-500 hasLoader"
                 {% if status != 'running' %} disabled {% endif %}
                 onclick="window.location.href='{% url 'stop_bot' bot.uid %}'"
                 title="Stop bot">
@@ -28,7 +28,7 @@
               <path fill-rule="evenodd" d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z" clip-rule="evenodd" />
             </svg>
         </button>
-        <button class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 disabled:opacity-50 disabled:hover:bg-teal-500"
+        <button class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 disabled:opacity-50 disabled:hover:bg-teal-500 hasLoader"
                 onclick="window.location.href='{% url 'recreate_bot' bot.uid %}'"
                 title="Recreate bot">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -36,18 +36,6 @@
             </svg>
         </button>
     </div>
-</div>
-<div class="mb-4 text-xl font-semibold">Edit:</div>
-<div class="bg-white shadow-md p-6 rounded mb-12">
-    <form method="post" id="bot-form">
-        {% csrf_token %}
-
-        {% render_form form %}
-
-        {% render_submit text='Save bot' css_class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %}
-
-        <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 ml-2" onclick="window.location.href='{% url 'bots_manager' %}'">Cancel</button>
-    </form>
 </div>
 {% if bot.container_id %}
 <div class="mb-4 text-xl font-semibold">Logs:</div>
