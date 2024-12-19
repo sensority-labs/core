@@ -1,7 +1,5 @@
 #!/bin/sh
 
-BOT_UPDATE_URL="http://127.0.0.1:8000/customers/set-bot-container-id/"
-
 NEW_REV=$1
 TEMP_DIR=$(mktemp -d)
 SYSTEM_USER_NAME=$(whoami)
@@ -34,14 +32,6 @@ if [ "$status_http_code" -ne 200 ]; then
     exit 1
 fi
 container_id=$(cat /tmp/curl_output)
-
-# Update the bot container id
-DATA="{\"system_user_name\": \"$SYSTEM_USER_NAME\", \"bot_name\": \"$BOT_NAME\", \"container_id\": \"$container_id\"}"
-status_http_code=$(curl -s -o /tmp/curl_output -w "%{http_code}" -X POST -H "Content-Type: application/json" -H "X-Token: $API_ACCESS_TOKEN" -d "$DATA" "$BOT_UPDATE_URL")
-if [ "$status_http_code" -ne 200 ]; then
-    echo "Bot update failed. Reverting changes..." >&2
-    exit 1
-fi
 
 # Clean up
 rm -rf "$TEMP_DIR"

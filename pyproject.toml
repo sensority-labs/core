@@ -19,6 +19,7 @@ django-formify = "^0.0.7"
 django-widget-tweaks = "^1.5.0"
 pytest = "^8.3.3"
 pytest-django = "^4.9.0"
+django-json-widget = "^2.0.1"
 
 
 [build-system]

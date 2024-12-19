@@ -1,11 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from gettext import gettext as _
+
+from django.db.models import JSONField
+from django_json_widget.widgets import JSONEditorWidget
+
 from customers.models import Customer, Bot, SSHKey
 
 
 @admin.register(Customer)
 class CustomerAdmin(UserAdmin):
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditorWidget},
+    }
     fieldsets = [
         (None, {"fields": ["email", "system_user_name", "password"]}),
         (
@@ -20,6 +27,7 @@ class CustomerAdmin(UserAdmin):
                 ),
             },
         ),
+        (_("ENV VARS"), {"fields": ["env_vars"]}),
     ]
     add_fieldsets = (
         (
@@ -55,8 +63,12 @@ class SSHKeyAdmin(admin.ModelAdmin):
 
 @admin.register(Bot)
 class BotAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditorWidget},
+    }
+
     list_display = ["name", "owner", "repo_url", "container_id"]
-    fields = ["name", "owner", "repo_url", "container_id"]
+    fields = ["name", "owner", "repo_url", "container_id", "env_vars"]
     readonly_fields = ["repo_url", "container_id"]
 
     def repo_url(self, obj: Bot):

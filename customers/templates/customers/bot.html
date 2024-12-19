@@ -41,6 +41,31 @@
     {% endif %}
     </div>
 </div>
+<div class="mb-4 text-xl font-semibold">Bot env variables:</div>
+<div class="bg-white shadow-md p-6 rounded mb-12">
+    <form method="post" id="bot-form">
+        {% csrf_token %}
+        <div class="grid gap-2 mb-6 md:grid-cols-2">
+        <label for="env_name" class="block text-sm font-medium text-gray-900">Name</label>
+        <label for="env_value" class="block text-sm font-medium text-gray-900">Value</label>
+        {% for key, value in bot.env_vars.items %}
+            <div>
+                <input name="env_name" type="text" id="env_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Env var name" value="{{ key }}"/>
+            </div>
+            <div>
+                <input name="env_value" type="text" id="env_value" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Env var value" value="{{ value }}"/>
+            </div>
+        {% endfor %}
+            <div>
+                <input name="env_name" type="text" id="env_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Env var name" />
+            </div>
+            <div>
+                <input name="env_value" type="text" id="env_value" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Env var value" />
+            </div>
+        </div>
+        {% render_submit text='Save' css_class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %}
+    </form>
+</div>
 {% if bot.container_id %}
 <div class="mb-4 text-xl font-semibold">Logs:</div>
 <div class="bg-white shadow-md p-6 rounded mb-12">

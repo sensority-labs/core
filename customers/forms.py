@@ -29,6 +29,14 @@ class BotForm(ModelForm):
         help_texts = {"name": "Имя бота"}
 
 
+class BotEnvVarsForm(ModelForm):
+    class Meta:
+        model = Bot
+        fields = ["env_vars"]
+        labels = {"env_vars": "Переменные окружения"}
+        help_texts = {"env_vars": "Переменные окружения бота"}
+
+
 class RouteForm(ModelForm):
     class Meta:
         model = FindingRoute

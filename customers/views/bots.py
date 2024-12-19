@@ -4,14 +4,14 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseBadRequest, HttpResponse, HttpRequest
 from django.shortcuts import redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from customers.decorators import require_token
-from customers.forms import BotForm
+from customers.forms import BotForm, BotEnvVarsForm
 from customers.models import Bot
 from customers.system.git import create_new_repo, remove_repo
 from customers.system.utils import BotMan
@@ -50,6 +50,19 @@ class EditBot(LoginRequiredMixin, UpdateView):
     model = Bot
     fields = ["name"]
     template_name = "customers/bot.html"
+
+    def post(self, request, *args, **kwargs):
+        env_names = request.POST.getlist("env_name")
+        if env_names:
+            env_vars = dict()
+            for name, value in zip(env_names, request.POST.getlist("env_value")):
+                if name and value:
+                    env_vars[name] = value
+            bot = self.get_object()
+            bot.env_vars = env_vars
+            bot.save()
+            return redirect("edit_bot", pk=self.get_object().pk)
+        return redirect("edit_bot", pk=self.get_object().pk)
 
     def get_queryset(self):
         return Bot.objects.filter(owner=self.request.user)
@@ -113,13 +126,29 @@ def recreate_bot(request, pk):
     return redirect("edit_bot", pk=pk)
 
 
+# Internal API
+@csrf_exempt
+@require_token
+@require_http_methods(["GET"])
+def get_bot_config(
+    request: HttpRequest, system_user_name: str, bot_name: str
+) -> HttpResponse:
+    bot = get_object_or_404(
+        Bot, owner__system_user_name=system_user_name, name=bot_name
+    )
+    envs: dict = bot.owner.env_vars
+    envs.update(bot.env_vars)
+
+    return HttpResponse(
+        json.dumps(envs),
+        content_type="application/json",
+    )
+
+
 @csrf_exempt
 @require_token
 @require_http_methods(["POST"])
 def set_bot_container_id(request):
-    print("=== set_bot_container_id ===")
-    print(request.body)
-    print("=== set_bot_container_id ===")
     try:
         data = json.loads(request.body)
         system_user_name = data.get("system_user_name")

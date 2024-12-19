@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     # Add the Django Formify app:
     "django_viewcomponent",
     "django_formify",
+    "django_json_widget",
 ]
 
 MIDDLEWARE = [

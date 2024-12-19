@@ -11,6 +11,31 @@
     </div>
 </div>
 <div class="mb-12">
+    <h2 class="text-xl font-semibold">Environment variables</h2>
+    <form method="post" action="{% url 'set_env_vars' %}" id="env-vars-form">
+        {% csrf_token %}
+        <div class="grid gap-2 mb-6 md:grid-cols-2">
+        <label for="env_name" class="block text-sm font-medium text-gray-900">Name</label>
+        <label for="env_value" class="block text-sm font-medium text-gray-900">Value</label>
+        {% for key, value in object.env_vars.items %}
+            <div>
+                <input name="env_name" type="text" id="env_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Env var name" value="{{ key }}"/>
+            </div>
+            <div>
+                <input name="env_value" type="text" id="env_value" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Env var value" value="{{ value }}"/>
+            </div>
+        {% endfor %}
+            <div>
+                <input name="env_name" type="text" id="env_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Env var name" />
+            </div>
+            <div>
+                <input name="env_value" type="text" id="env_value" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Env var value" />
+            </div>
+        </div>
+        {% render_submit text='Save' css_class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %}
+    </form>
+</div>
+<div class="mb-12">
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold">SSH Keys</h2>
         <button id="add-key-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add SSH Key</button>

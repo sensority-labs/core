@@ -410,6 +410,16 @@ django = ">=3.0"
 django-viewcomponent = ">=1.0.8"
 
 [[package]]
+name = "django-json-widget"
+version = "2.0.1"
+description = "Django json widget is an alternative widget that makes it easy to edit the jsonfield field of django."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-json-widget-2.0.1.tar.gz", hash = "sha256:adb4cab17fe5a04139037d7d84725369530ef35b912c3790d3a7b13f99351358"},
+]
+
+[[package]]
 name = "django-viewcomponent"
 version = "1.0.9"
 description = "Build reusable components in Django, inspired by Rails ViewComponent"
@@ -772,4 +782,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.6.3)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "ddb4386ee70b2dc8e4a53528bbd8c529da44377512b4a64eb2b1939b76a84d90"
+content-hash = "59e7185d325710278f879b60e672a25b088dccf1550255010127e8d93ee96669"

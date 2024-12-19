@@ -23,6 +23,7 @@ class Customer(Dated, UUIDed, AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_("Staff"), default=False)
     is_active = models.BooleanField(_("Active"), default=True)
     date_joined = models.DateTimeField(_("Joined at"), default=timezone.now)
+    env_vars = models.JSONField(_("Environment variables"), default=dict)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -80,6 +81,7 @@ class Bot(Dated, UUIDed):
         on_delete=models.CASCADE,
     )
     container_id = models.CharField(_("Container ID"), max_length=255, blank=True)
+    env_vars = models.JSONField(_("Environment variables"), default=dict)
 
     @property
     def repo_url(self):

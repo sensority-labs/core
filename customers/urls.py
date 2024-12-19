@@ -1,6 +1,6 @@
 from django.urls import path
 
-from customers.views.profile import ProfileView
+from customers.views.profile import ProfileView, set_env_vars
 from customers.views.ssh_keys import CreateSSHKeyView, DeleteSSHKeyView
 from customers.views.views import (
     index,
@@ -20,13 +20,14 @@ from customers.views.bots import (
     set_bot_container_id,
     start_bot,
     stop_bot,
-    recreate_bot,
+    recreate_bot, get_bot_config,
 )
 
 
 urlpatterns = [
     path("", index, name="customers_index"),
     path("profile/", ProfileView.as_view(), name="profile"),
+    path("profile/set-env-vars/", set_env_vars, name="set_env_vars"),
     path("keys/new", CreateSSHKeyView.as_view(), name="create_ssh_key"),
     path("keys/<uuid:pk>/delete/", DeleteSSHKeyView.as_view(), name="delete_ssh_key"),
     path("bots/", ListBots.as_view(), name="bots_manager"),
@@ -47,4 +48,5 @@ urlpatterns = [
         name="get_route",
     ),
     path("set-bot-container-id/", set_bot_container_id, name="set_bot_container_id"),
+    path("get-bot-config/<str:system_user_name>/<str:bot_name>", get_bot_config, name="get_bot_config"),
 ]
